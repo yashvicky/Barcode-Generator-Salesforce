@@ -1,0 +1,108 @@
+.qr-preview {
+    width: 256px;
+    height: 256px;
+    object-fit: contain;
+    border: 1px solid #dddbda;
+    border-radius: 4px;
+    background: #fff;
+    padding: 4px;
+}
+
+/* Print surface covering whole page when print view open */
+.print-surface {
+    position: fixed;
+    inset: 0;
+    background: #fff;
+    z-index: 9999;
+    overflow: auto;
+    padding: 12px;
+}
+
+/* Controls shown only on screen, not printed */
+.no-print {
+    margin-bottom: 12px;
+}
+
+/* Grid for labels; approximate 4x2 inch at 96 DPI ~ 384x192 px content box + padding/border */
+.label-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 12px;
+}
+
+/* Each label card approximates 4x2 inches including padding/border for common 4x2 label printers */
+.label-card {
+    width: 4in;
+    height: 2in;
+    border: 1px dashed #c9c7c5;
+    border-radius: 4px;
+    padding: 4px;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    box-sizing: border-box;
+}
+
+.label-header {
+    display: grid;
+    grid-template-rows: auto auto auto;
+    line-height: 1.1;
+    margin-bottom: 2px;
+}
+
+.label-title {
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.label-sub {
+    font-size: 11px;
+    color: #444;
+}
+
+.label-qrcode {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.label-qrcode img {
+    max-height: calc(2in - 52px); /* leave space for header text */
+    max-width: 100%;
+}
+
+/* Screen styles only */
+@media screen {
+    .print-surface {
+        background: #f3f3f3;
+    }
+}
+
+/* Print-optimized styles */
+@media print {
+    :host {
+        display: block;
+    }
+    body, html {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    .no-print {
+        display: none !important;
+    }
+    .print-surface {
+        position: static;
+        padding: 0;
+        background: #fff !important;
+    }
+    /* Keep exact size for labels when printing */
+    .label-card {
+        page-break-inside: avoid;
+        break-inside: avoid;
+        border: 1px dashed #000;
+    }
+}
+
+/* Datatable status icon colors already applied via class field binding */

@@ -1,0 +1,117 @@
+<template>
+    <lightning-card title="Barcode Generator for Order Line Items" icon-name="utility:scan">
+        <div class="slds-p-horizontal_small slds-p-vertical_small">
+            <div class="slds-grid slds-wrap slds-gutters_small slds-m-bottom_small">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-4">
+                    <lightning-record-picker
+                        label="Select Order"
+                        placeholder="Search Orders..."
+                        object-api-name="Order"
+                        display-info="true"
+                        value={selectedOrderId}
+                        onchange={handleOrderChange}>
+                    </lightning-record-picker>
+                </div>
+                <div class="slds-col slds-medium-size_1-of-4 slds-align_absolute-center slds-p-top_medium">
+                    <lightning-button
+                        variant="brand-outline"
+                        label="Refresh"
+                        title="Refresh"
+                        icon-name="utility:refresh"
+                        class="slds-m-right_x-small"
+                        onclick={refresh}>
+                    </lightning-button>
+                    <lightning-button
+                        variant="brand"
+                        label="Print All Barcodes"
+                        title="Print All Barcodes"
+                        icon-name="utility:print"
+                        onclick={openPrintView}
+                        disabled={disablePrint}>
+                    </lightning-button>
+                </div>
+            </div>
+
+            <template if:true={isLoading}>
+                <div class="slds-is-relative slds-p-vertical_large">
+                    <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+                </div>
+            </template>
+
+            <template if:false={isLoading}>
+                <template if:false={selectedOrderId}>
+                    <div class="slds-text-color_error slds-m-vertical_small">Select an Order to view line items.</div>
+                </template>
+
+                <template if:true={selectedOrderId}>
+                    <template if:true={hasRows}>
+                        <lightning-datatable
+                            key-field="id"
+                            data={rows}
+                            columns={columns}
+                            onsave={handleSaveInline}
+                            draft-values={draftValues}
+                            hide-checkbox-column>
+                        </lightning-datatable>
+                    </template>
+                    <template if:false={hasRows}>
+                        <div class="slds-text-color_weak slds-m-vertical_small">No line items found for the selected order.</div>
+                    </template>
+                </template>
+            </template>
+        </div>
+    </lightning-card>
+
+    <!-- Generate Modal -->
+    <template if:true={showModal}>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium">Generated Barcode</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <div class="slds-grid slds-wrap slds-gutters_small">
+                        <div class="slds-col slds-size_1-of-1 slds-m-bottom_small">
+                            <p>
+                                <strong>Order:</strong> {currentModal.orderNumber} &nbsp;|&nbsp;
+                                <strong>Product:</strong> {currentModal.productName} &nbsp;|&nbsp;
+                                <strong>Location:</strong> {currentModal.location}
+                            </p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-align_absolute-center">
+                            <img if:true={currentModal.barcodeDataUrl} src={currentModal.barcodeDataUrl} alt="QR Code" class="qr-preview" />
+                        </div>
+                    </div>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning-button variant="neutral" label="Close" onclick={closeModal}></lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+    <!-- Print View -->
+    <template if:true={showPrint}>
+        <section class="print-surface">
+            <div class="print-controls no-print">
+                <lightning-button variant="neutral" label="Back" icon-name="utility:back" onclick={closePrintView} class="slds-m-right_small"></lightning-button>
+                <lightning-button variant="brand" label="Print" icon-name="utility:print" onclick={triggerPrint}></lightning-button>
+            </div>
+            <div class="label-grid">
+                <template for:each={printItems} for:item="pi">
+                    <div key={pi.id} class="label-card">
+                        <div class="label-header">
+                            <div class="label-title">{pi.productName}</div>
+                            <div class="label-sub">Order: {pi.orderNumber}</div>
+                            <div class="label-sub">Loc: {pi.warehouseLocation}</div>
+                        </div>
+                        <div class="label-qrcode">
+                            <img src={pi.barcodeImage} alt="QR Code" />
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </section>
+    </template>
+</template>
