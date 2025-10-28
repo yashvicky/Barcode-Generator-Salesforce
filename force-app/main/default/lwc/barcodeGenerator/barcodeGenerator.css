@@ -1,108 +1,85 @@
-.qr-preview {
-    width: 256px;
-    height: 256px;
-    object-fit: contain;
-    border: 1px solid #dddbda;
-    border-radius: 4px;
-    background: #fff;
-    padding: 4px;
+.barcode-cell {
+    background-color: #f3f3f3;
+    padding: 20px !important;
 }
 
-/* Print surface covering whole page when print view open */
-.print-surface {
-    position: fixed;
-    inset: 0;
-    background: #fff;
-    z-index: 9999;
-    overflow: auto;
-    padding: 12px;
+.barcode-container {
+    background: white;
+    padding: 20px;
+    border: 2px solid #000;
+    text-align: center;
+    max-width: 400px;
+    margin: 0 auto;
 }
 
-/* Controls shown only on screen, not printed */
-.no-print {
-    margin-bottom: 12px;
+.barcode-header {
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #000;
 }
 
-/* Grid for labels; approximate 4x2 inch at 96 DPI ~ 384x192 px content box + padding/border */
-.label-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-    gap: 12px;
-}
-
-/* Each label card approximates 4x2 inches including padding/border for common 4x2 label printers */
-.label-card {
-    width: 4in;
-    height: 2in;
-    border: 1px dashed #c9c7c5;
-    border-radius: 4px;
-    padding: 4px;
-    display: grid;
-    grid-template-rows: auto 1fr;
-    box-sizing: border-box;
-}
-
-.label-header {
-    display: grid;
-    grid-template-rows: auto auto auto;
-    line-height: 1.1;
-    margin-bottom: 2px;
-}
-
-.label-title {
-    font-size: 14px;
-    font-weight: 700;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.label-sub {
-    font-size: 11px;
+.barcode-text {
+    font-size: 12px;
+    margin: 10px 0;
     color: #444;
+    font-family: monospace;
 }
 
-.label-qrcode {
+.barcode-visual {
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: flex-end;
+    height: 100px;
+    margin: 15px 0;
+    background: white;
 }
 
-.label-qrcode img {
-    max-height: calc(2in - 52px); /* leave space for header text */
-    max-width: 100%;
+.barcode-visual .bar {
+    background-color: #000;
+    width: 3px;
+    height: 80px;
 }
 
-/* Screen styles only */
-@media screen {
-    .print-surface {
-        background: #f3f3f3;
-    }
+.barcode-visual .bar.wide {
+    width: 6px;
+    height: 80px;
 }
 
-/* Print-optimized styles */
+.barcode-visual .space {
+    width: 3px;
+    height: 80px;
+}
+
+.barcode-location {
+    font-size: 14px;
+    font-weight: bold;
+    color: #0070d2;
+    margin-top: 10px;
+    padding: 5px;
+    background: #e8f4ff;
+    border-radius: 3px;
+}
+
 @media print {
-    :host {
-        display: block;
-    }
-    body, html {
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-    .no-print {
-        display: none !important;
-    }
-    .print-surface {
-        position: static;
-        padding: 0;
-        background: #fff !important;
-    }
-    /* Keep exact size for labels when printing */
-    .label-card {
+    .barcode-container {
         page-break-inside: avoid;
-        break-inside: avoid;
-        border: 1px dashed #000;
+        margin: 20px;
     }
 }
 
-/* Datatable status icon colors already applied via class field binding */
+.barcode-image {
+    max-width: 100%;
+    height: auto;
+    margin: 10px 0;
+}
+
+.barcode-fallback {
+    background-color: #f0f8ff;
+    border: 1px solid #add8e6;
+    border-radius: 4px;
+    padding: 10px;
+    margin: 10px 0;
+    font-family: monospace;
+    font-size: 12px;
+    white-space: pre;
+}

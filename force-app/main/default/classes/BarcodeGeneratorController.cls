@@ -1,115 +1,72 @@
 public with sharing class BarcodeGeneratorController {
-    public class OrderItemDTO {
-        @AuraEnabled public Id id;
-        @AuraEnabled public String productName;
-        @AuraEnabled public Decimal quantity;
-        @AuraEnabled public Decimal unitPrice;
-        @AuraEnabled public String orderNumber;
-        @AuraEnabled public Boolean barcodeGenerated;
-        @AuraEnabled public String warehouseLocation;
-        @AuraEnabled public String barcodeImage; // optional when returning, used for print-all if needed
-    }
-
+    
     @AuraEnabled(cacheable=true)
-    public static List<OrderItemDTO> getOrderItems(String orderId) {
-        if (String.isBlank(orderId)) {
-            return new List<OrderItemDTO>();
+    public static List<Map<String, String>> getRecentOrders() {
+        List<Map<String, String>> orderOptions = new List<Map<String, String>>();
+        
+        try {
+            List<Order> orders = [
+                SELECT Id, OrderNumber, Account.Name 
+                FROM Order 
+                WHERE Status = 'Activated'
+                ORDER BY CreatedDate DESC 
+                LIMIT 50
+            ];
+            
+            for (Order ord : orders) {
+                Map<String, String> option = new Map<String, String>();
+                option.put('label', 'Order #' + ord.OrderNumber + ' - ' + ord.Account.Name);
+                option.put('value', ord.Id);
+                orderOptions.add(option);
+            }
+        } catch (Exception e) {
+            System.debug('Error in getRecentOrders: ' + e.getMessage());
+            throw new AuraHandledException('Error retrieving orders: ' + e.getMessage());
         }
+        
+        return orderOptions;
+    }
+    
+    @AuraEnabled(cacheable=true)
+    public static List<OrderItem> getOrderItems(String orderId) {
         try {
             List<OrderItem> items = [
-                SELECT Id,
-                       Quantity,
+                SELECT Id, 
+                       Product2.Name,
+                       Product2Id,
+                       Quantity, 
                        UnitPrice,
                        Order.OrderNumber,
-                       Product2.Name,
-                       Barcode_Generated__c,
+                       OrderId,
                        Warehouse_Location__c,
+                       Barcode_Generated__c,
                        Barcode_Image__c
-                FROM OrderItem
-                WHERE OrderId = :orderId
-                ORDER BY CreatedDate ASC
-                LIMIT 2000
+                FROM OrderItem 
+                WHERE OrderId = :orderId 
+                ORDER BY CreatedDate DESC
             ];
-            List<OrderItemDTO> result = new List<OrderItemDTO>();
-            for (OrderItem oi : items) {
-                OrderItemDTO dto = new OrderItemDTO();
-                dto.id = oi.Id;
-                dto.productName = (oi.Product2 != null) ? oi.Product2.Name : null;
-                dto.quantity = oi.Quantity;
-                dto.unitPrice = oi.UnitPrice;
-                dto.orderNumber = (oi.Order != null) ? oi.Order.OrderNumber : null;
-                dto.barcodeGenerated = oi.Barcode_Generated__c;
-                dto.warehouseLocation = oi.Warehouse_Location__c;
-                // Do not send image by default to keep payload small; send only when needed for print view if desired
-                // dto.barcodeImage = oi.Barcode_Image__c;
-                result.add(dto);
-            }
-            return result;
+            
+            return items;
         } catch (Exception e) {
-            throw new AuraHandledException('Failed to load Order Items: ' + e.getMessage());
+            System.debug('Error in getOrderItems: ' + e.getMessage());
+            throw new AuraHandledException('Error retrieving order items: ' + e.getMessage());
         }
     }
-
+    
     @AuraEnabled
-    public static String updateBarcodeData(String orderItemId, String barcodeImage, String location) {
-        if (String.isBlank(orderItemId)) {
-            throw new AuraHandledException('Order Item Id is required.');
-        }
-        if (String.isBlank(barcodeImage)) {
-            throw new AuraHandledException('Barcode image data is required.');
-        }
+    public static void updateBarcodeData(String orderItemId, String barcodeImage, String location) {
         try {
-            OrderItem oi = new OrderItem(
+            OrderItem item = new OrderItem(
                 Id = orderItemId,
                 Barcode_Image__c = barcodeImage,
                 Warehouse_Location__c = location,
                 Barcode_Generated__c = true
             );
-            update oi;
-            return 'SUCCESS';
-        } catch (DmlException d) {
-            throw new AuraHandledException('Failed to save barcode: ' + d.getDmlMessage(0));
+            
+            update item;
         } catch (Exception e) {
-            throw new AuraHandledException('Unexpected error: ' + e.getMessage());
-        }
-    }
-
-    @AuraEnabled(cacheable=true)
-    public static List<OrderItemDTO> getItemsWithBarcodes(String orderId) {
-        if (String.isBlank(orderId)) {
-            return new List<OrderItemDTO>();
-        }
-        try {
-            List<OrderItem> items = [
-                SELECT Id,
-                       Quantity,
-                       UnitPrice,
-                       Order.OrderNumber,
-                       Product2.Name,
-                       Barcode_Generated__c,
-                       Warehouse_Location__c,
-                       Barcode_Image__c
-                FROM OrderItem
-                WHERE OrderId = :orderId AND Barcode_Generated__c = true
-                ORDER BY CreatedDate ASC
-                LIMIT 2000
-            ];
-            List<OrderItemDTO> result = new List<OrderItemDTO>();
-            for (OrderItem oi : items) {
-                OrderItemDTO dto = new OrderItemDTO();
-                dto.id = oi.Id;
-                dto.productName = (oi.Product2 != null) ? oi.Product2.Name : null;
-                dto.quantity = oi.Quantity;
-                dto.unitPrice = oi.UnitPrice;
-                dto.orderNumber = (oi.Order != null) ? oi.Order.OrderNumber : null;
-                dto.barcodeGenerated = oi.Barcode_Generated__c;
-                dto.warehouseLocation = oi.Warehouse_Location__c;
-                dto.barcodeImage = oi.Barcode_Image__c;
-                result.add(dto);
-            }
-            return result;
-        } catch (Exception e) {
-            throw new AuraHandledException('Failed to load barcodes: ' + e.getMessage());
+            System.debug('Error in updateBarcodeData: ' + e.getMessage());
+            throw new AuraHandledException('Error updating barcode: ' + e.getMessage());
         }
     }
 }
