@@ -1,3 +1,18 @@
+/**
+ * @description Controller for Barcode Generator Lightning Web Component
+ * @author [Yashwanth Doraswamy]
+ * @date 2025-10-28
+ * @group Inventory Management
+ * 
+ * Provides methods to:
+ * - Fetch activated orders for selection
+ * - Retrieve order line items with product details
+ * - Save barcode data and warehouse locations
+ * 
+ * Security: Uses 'with sharing' for record-level security
+ * Performance: Cacheable methods for efficiency
+ */
+
 public with sharing class BarcodeGeneratorController {
     
     @AuraEnabled(cacheable=true)
