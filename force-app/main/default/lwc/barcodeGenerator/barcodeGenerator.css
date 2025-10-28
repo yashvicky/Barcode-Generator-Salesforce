@@ -1,3 +1,4 @@
+/* Screen styles */
 .barcode-cell {
     background-color: #f3f3f3;
     padding: 20px !important;
@@ -60,26 +61,92 @@
     border-radius: 3px;
 }
 
+/* Print styles - CORRECTED */
 @media print {
-    .barcode-container {
-        page-break-inside: avoid;
-        margin: 20px;
+    /* Force color printing */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
     }
-}
 
-.barcode-image {
-    max-width: 100%;
-    height: auto;
-    margin: 10px 0;
-}
+    /* Hide UI elements */
+    lightning-card > header,
+    .slds-m-around_medium:has(lightning-combobox),
+    .slds-m-around_medium:has(lightning-button[label="Refresh"]),
+    thead,
+    tbody > tr:not(.barcode-row),
+    lightning-button[label="Print All Barcodes"] {
+        display: none !important;
+    }
 
-.barcode-fallback {
-    background-color: #f0f8ff;
-    border: 1px solid #add8e6;
-    border-radius: 4px;
-    padding: 10px;
-    margin: 10px 0;
-    font-family: monospace;
-    font-size: 12px;
-    white-space: pre;
+    /* Show barcode rows */
+    .barcode-row {
+        display: table-row !important;
+    }
+
+    .barcode-cell {
+        display: table-cell !important;
+        background-color: white !important;
+        padding: 30px !important;
+    }
+
+    .barcode-container {
+        background: white !important;
+        padding: 30px !important;
+        border: 3px solid #000 !important;
+        page-break-inside: avoid !important;
+        margin: 20px 0 !important;
+        max-width: 100% !important;
+    }
+
+    .barcode-header {
+        font-size: 24px !important;
+        font-weight: bold !important;
+        margin-bottom: 15px !important;
+        color: #000 !important;
+    }
+
+    .barcode-text {
+        font-size: 14px !important;
+        margin: 15px 0 !important;
+        color: #000 !important;
+    }
+
+    .barcode-visual {
+        display: flex !important;
+        justify-content: center !important;
+        height: 120px !important;
+        margin: 25px 0 !important;
+    }
+
+    .barcode-visual .bar {
+        background-color: #000 !important;
+        width: 5px !important;
+        height: 100px !important;
+    }
+
+    .barcode-visual .bar.wide {
+        background-color: #000 !important;
+        width: 10px !important;
+        height: 100px !important;
+    }
+
+    .barcode-visual .space {
+        width: 5px !important;
+        background: white !important;
+    }
+
+    .barcode-location {
+        font-size: 18px !important;
+        font-weight: bold !important;
+        color: #000 !important;
+        background: #e8f4ff !important;
+        padding: 10px !important;
+        margin-top: 15px !important;
+    }
+
+    @page {
+        margin: 0.5in;
+        size: auto;
+    }
 }

@@ -1,5 +1,5 @@
 <template>
-    <lightning-card title="Barcode Generator for Order Line Items">
+    <lightning-card title="Barcode Generator for Order Line Items" icon-name="custom:custom14">
         
         <!-- Order Selection -->
         <div class="slds-m-around_medium">
@@ -16,7 +16,8 @@
                 <div class="slds-col">
                     <lightning-button 
                         label="Refresh" 
-                        onclick={handleRefresh}>
+                        onclick={handleRefresh}
+                        icon-name="utility:refresh">
                     </lightning-button>
                 </div>
             </div>
@@ -52,7 +53,7 @@
                                     <lightning-input 
                                         type="text" 
                                         value={item.location}
-                                        data-id={item.id}
+                                        data-id={item.Id}
                                         onchange={handleLocationChange}
                                         placeholder="Enter location">
                                     </lightning-input>
@@ -69,33 +70,45 @@
                                     <lightning-button 
                                         label="Generate" 
                                         onclick={handleGenerateBarcode}
-                                        data-id={item.id}
+                                        data-id={item.Id}
                                         variant="brand">
                                     </lightning-button>
                                 </td>
                             </tr>
                             <!-- Barcode Display Row -->
                             <template if:true={item.showBarcode}>
-                                <tr key={item.barcodeKey}>
+                                <tr key={item.barcodeKey} class="barcode-row">
                                     <td colspan="6" class="barcode-cell">
                                         <div class="barcode-container">
                                             <div class="barcode-header">
                                                 <strong>{item.productName}</strong>
                                             </div>
                                             <div class="barcode-text">
-                                                Order: {item.orderNumber} | Item: {item.id}
+                                                Order: {item.orderNumber} | Item: {item.Id}
                                             </div>
-                                            <template if:true={item.barcodeImageData}>
-                                                <img src={item.barcodeImageData} alt="Barcode" class="barcode-image" />
-                                            </template>
-                                            <template if:false={item.barcodeImageData}>
-                                                <div class="barcode-fallback">
-                                                    <p>Barcode not available - Demo Text:</p>
-                                                    <pre>Order: 00000103
-Item: F-150 Lightning
-Code: ||| | || ||| | | ||| | ||</pre>
-                                                </div>
-                                            </template>
+                                            <div class="barcode-visual">
+                                                <div class="bar"></div>
+                                                <div class="space"></div>
+                                                <div class="bar wide"></div>
+                                                <div class="space"></div>
+                                                <div class="bar"></div>
+                                                <div class="space"></div>
+                                                <div class="bar wide"></div>
+                                                <div class="space"></div>
+                                                <div class="bar"></div>
+                                                <div class="space"></div>
+                                                <div class="bar wide"></div>
+                                                <div class="space"></div>
+                                                <div class="bar"></div>
+                                                <div class="space"></div>
+                                                <div class="bar wide"></div>
+                                                <div class="space"></div>
+                                                <div class="bar"></div>
+                                                <div class="space"></div>
+                                                <div class="bar wide"></div>
+                                                <div class="space"></div>
+                                                <div class="bar"></div>
+                                            </div>
                                             <div class="barcode-text">
                                                 {item.barcodeData}
                                             </div>
@@ -127,7 +140,8 @@ Code: ||| | || ||| | | ||| | ||</pre>
                 <lightning-button 
                     label="Print All Barcodes" 
                     onclick={handlePrint}
-                    variant="success">
+                    variant="success"
+                    icon-name="utility:print">
                 </lightning-button>
             </div>
         </template>
