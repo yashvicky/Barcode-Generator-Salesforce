@@ -1,0 +1,86 @@
+<template>
+    <lightning-card title="Barcode Generator V2.0" icon-name="custom:custom14">
+        
+        <div class="slds-m-around_medium">
+            
+            <!-- Section 1: Order Information -->
+            <div class="slds-box slds-m-bottom_medium">
+                <div class="slds-text-heading_small slds-m-bottom_x-small">
+                    Order Information
+                </div>
+                <div class="slds-grid slds-wrap">
+                    <div class="slds-col slds-size_1-of-2">
+                        <div class="slds-text-body_small slds-text-color_weak">Order Number</div>
+                        <div class="slds-text-body_regular">{orderNumber}</div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <div class="slds-text-body_small slds-text-color_weak">Account</div>
+                        <div class="slds-text-body_regular">{accountName}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Section 2: Order Barcode -->
+            <div class="slds-box slds-m-bottom_medium">
+                <div class="slds-text-heading_small slds-m-bottom_small">
+                    Order Barcode
+                </div>
+                
+                <!-- Generate Button (shows before barcode generated) -->
+                <template if:false={orderBarcodeGenerated}>
+                    <div class="slds-text-align_center slds-m-vertical_medium">
+                        <lightning-button 
+                            label="Generate Order Barcode" 
+                            onclick={handleGenerateOrderBarcode}
+                            variant="brand"
+                            icon-name="utility:apex">
+                        </lightning-button>
+                    </div>
+                </template>
+                
+                <!-- Barcode Display (shows after generation) -->
+                <template if:true={orderBarcodeGenerated}>
+                    <div class="barcode-container">
+                        <div class="barcode-title">ORDER BARCODE</div>
+                        <div class="barcode-subtitle">Order Level Tracking</div>
+                        
+                        <!-- SVG barcode will be inserted here -->
+                        <div class="barcode-display">
+                            <svg lwc:dom="manual" class="barcode-svg"></svg>
+                        </div>
+                        
+                        <div class="barcode-label">Order: {orderNumber}</div>
+                        <div class="barcode-sublabel">Account: {accountName}</div>
+                    </div>
+                    
+                    <div class="slds-text-align_center slds-m-top_small">
+                        <lightning-badge label="Barcode Generated" class="slds-badge_success"></lightning-badge>
+                    </div>
+                </template>
+            </div>
+            
+            <!-- Section 3: Coming Soon -->
+            <div class="slds-box slds-m-bottom_medium" style="background: #f3f3f3;">
+                <div class="slds-text-heading_small slds-m-bottom_x-small">
+                    Coming in Next Pieces
+                </div>
+                <ul class="slds-list_dotted">
+                    <li>Product Barcodes (Piece 4)</li>
+                    <li>Line Item Barcodes (Piece 5)</li>
+                    <li>Print Functionality</li>
+                </ul>
+            </div>
+            
+            <!-- Close Button -->
+            <div class="slds-text-align_center">
+                <lightning-button 
+                    label="Close" 
+                    onclick={handleClose}
+                    variant="neutral">
+                </lightning-button>
+            </div>
+            
+        </div>
+        
+    </lightning-card>
+</template>

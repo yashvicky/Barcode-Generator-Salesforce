@@ -1,0 +1,73 @@
+/* Basic styling */
+.slds-text-heading_medium {
+    font-weight: bold;
+    color: #032d60;
+}
+
+.slds-text-body_regular {
+    color: #3e3e3c;
+}
+
+/* Info boxes */
+.slds-box {
+    background: white;
+    border: 1px solid #dddbda;
+}
+
+/* Barcode container */
+.barcode-container {
+    background: white;
+    padding: 20px;
+    border: 2px solid #000;
+    text-align: center;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.barcode-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #032d60;
+}
+
+.barcode-subtitle {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 15px;
+}
+
+/* Barcode display area */
+.barcode-display {
+    background: white;
+    padding: 10px;
+    margin: 10px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.barcode-svg {
+    max-width: 100%;
+    height: auto;
+}
+
+.barcode-label {
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 10px;
+    font-family: monospace;
+    color: #000;
+}
+
+.barcode-sublabel {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* Badge styling */
+.slds-badge_success {
+    background-color: #4bca81;
+    color: white;
+}
