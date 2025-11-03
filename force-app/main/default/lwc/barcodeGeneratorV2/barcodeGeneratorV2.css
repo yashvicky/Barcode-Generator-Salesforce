@@ -71,3 +71,72 @@
     background-color: #4bca81;
     color: white;
 }
+/* Product Grid */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+/* Product Card */
+.product-card {
+    background: white;
+    border: 1px solid #dddbda;
+    border-radius: 4px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.product-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.product-name {
+    font-weight: bold;
+    font-size: 14px;
+    color: #032d60;
+}
+
+/* Smaller Barcode Container for Products */
+.barcode-container-small {
+    background: white;
+    padding: 15px;
+    border: 1px solid #000;
+    text-align: center;
+}
+
+.barcode-display-small {
+    background: white;
+    padding: 5px;
+    margin: 10px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80px;
+}
+
+.barcode-svg-product {
+    max-width: 100%;
+    height: auto;
+}
+
+.barcode-label-small {
+    font-size: 12px;
+    font-weight: bold;
+    margin-top: 8px;
+    font-family: monospace;
+    color: #000;
+}
+
+/* Responsive: Stack on mobile */
+@media (max-width: 768px) {
+    .products-grid {
+        grid-template-columns: 1fr;
+    }
+}

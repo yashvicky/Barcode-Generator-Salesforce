@@ -9,7 +9,11 @@ import JSBARCODE from '@salesforce/resourceUrl/JsBarcode';
 import ORDER_NUMBER_FIELD from '@salesforce/schema/Order.OrderNumber';
 import ACCOUNT_NAME_FIELD from '@salesforce/schema/Order.Account.Name';
 import ORDER_BARCODE_FIELD from '@salesforce/schema/Order.Order_Barcode__c';
+// Import Product field
+import PRODUCT_BARCODE_FIELD from '@salesforce/schema/Product2.Product_Barcode__c';
 
+// Import Apex methods
+import getOrderProducts from '@salesforce/apex/BarcodeGeneratorV2Controller.getOrderProducts';
 export default class BarcodeGeneratorV2 extends LightningElement {
     
     @api recordId;
@@ -18,7 +22,16 @@ export default class BarcodeGeneratorV2 extends LightningElement {
     @track accountName = '';
     @track orderBarcodeGenerated = false;
     
+    @track products = [];
+    @track productsLoaded = false;
+    @track productCount = 0;
+
     jsBarcodeLoaded = false;
+
+    // Computed property
+get hasProducts() {
+    return this.products && this.products.length > 0;
+}
     
     // Wire service to get Order data
     @wire(getRecord, { 
@@ -119,7 +132,101 @@ export default class BarcodeGeneratorV2 extends LightningElement {
             }
         }, 100);
     }
+    // Generate Product Barcodes
+handleGenerateProductBarcodes() {
+    console.log('Generating product barcodes for order:', this.recordId);
     
+    if (!this.recordId) {
+        this.showToast('Error', 'Order ID not available', 'error');
+        return;
+    }
+    
+    // Call Apex to get products
+    getOrderProducts({ orderId: this.recordId })
+        .then(result => {
+            console.log('Products retrieved:', result);
+            
+            if (result && result.length > 0) {
+                // Map products with unique keys
+                this.products = result.map(item => {
+                    return {
+                        productId: item.Product2Id,
+                        productName: item.Product2.Name,
+                        orderItemId: item.Id
+                    };
+                });
+                
+                this.productCount = this.products.length;
+                this.productsLoaded = true;
+                
+                // Generate barcodes for all products
+                this.generateAllProductBarcodes();
+                
+                this.showToast('Success', `${this.productCount} product barcode(s) generated!`, 'success');
+            } else {
+                this.productsLoaded = true;
+                this.showToast('Warning', 'No products found in this order', 'warning');
+            }
+        })
+        .catch(error => {
+            console.error('Error loading products:', error);
+            this.showToast('Error', 'Failed to load products: ' + error.body.message, 'error');
+        });
+}
+
+// Generate barcodes for all products
+generateAllProductBarcodes() {
+    if (!this.jsBarcodeLoaded) {
+        // Load library first
+        loadScript(this, JSBARCODE)
+            .then(() => {
+                console.log('JsBarcode loaded for products');
+                this.jsBarcodeLoaded = true;
+                this.renderProductBarcodes();
+            })
+            .catch(error => {
+                console.error('Error loading JsBarcode:', error);
+                this.showToast('Error', 'Failed to load barcode library', 'error');
+            });
+    } else {
+        // Library already loaded
+        this.renderProductBarcodes();
+    }
+}
+
+// Render barcode for each product
+renderProductBarcodes() {
+    setTimeout(() => {
+        this.products.forEach(product => {
+            try {
+                // Find SVG element for this product
+                const svgElement = this.template.querySelector(`svg[data-product-id="${product.productId}"]`);
+                
+                if (!svgElement) {
+                    console.error('SVG element not found for product:', product.productId);
+                    return;
+                }
+                
+                // Generate barcode using product ID
+                window.JsBarcode(svgElement, product.productId, {
+                    format: "CODE128",
+                    width: 2,
+                    height: 60,
+                    displayValue: false,
+                    margin: 5,
+                    background: "#ffffff",
+                    lineColor: "#000000"
+                });
+                
+                console.log('Product barcode generated for:', product.productName);
+                
+            } catch (error) {
+                console.error('Error generating product barcode:', error);
+            }
+        });
+    }, 200); // Longer timeout to ensure DOM is ready
+}
+
     // Close modal
     handleClose() {
         this.dispatchEvent(new CloseActionScreenEvent());
