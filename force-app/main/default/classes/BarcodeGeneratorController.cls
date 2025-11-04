@@ -25,6 +25,7 @@ public with sharing class BarcodeGeneratorController {
                 FROM Order 
                 WHERE Status = 'Activated'
                 ORDER BY CreatedDate DESC 
+                
                 LIMIT 50
             ];
             

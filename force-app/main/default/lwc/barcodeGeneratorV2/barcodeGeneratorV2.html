@@ -117,13 +117,101 @@
     </template>
 </div>
 
-<!-- Section 4: Coming Soon (Line Items) -->
+<!-- Section 4: Line Item Barcodes -->
+<div class="slds-box slds-m-bottom_medium">
+    <div class="slds-text-heading_small slds-m-bottom_small">
+        Line Item Barcodes
+        <span class="slds-text-body_small slds-text-color_weak"> (Unique barcode per order item)</span>
+    </div>
+    
+    <!-- Generate Button (shows before line items loaded) -->
+    <template if:false={lineItemsLoaded}>
+        <div class="slds-text-align_center slds-m-vertical_medium">
+            <lightning-button 
+                label="Generate Line Item Barcodes" 
+                onclick={handleGenerateLineItemBarcodes}
+                variant="brand"
+                icon-name="utility:receipt">
+            </lightning-button>
+        </div>
+    </template>
+    
+    <!-- Line Items Display (shows after generation) -->
+    <template if:true={lineItemsLoaded}>
+        <template if:true={hasLineItems}>
+            
+            <!-- Line Items Table -->
+            <div class="line-items-table">
+                <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th scope="col" style="width: 30%;">
+                                <div class="slds-truncate" title="Product">Product</div>
+                            </th>
+                            <th scope="col" style="width: 10%;">
+                                <div class="slds-truncate" title="Quantity">Qty</div>
+                            </th>
+                            <th scope="col" style="width: 15%;">
+                                <div class="slds-truncate" title="Unit Price">Unit Price</div>
+                            </th>
+                            <th scope="col" style="width: 45%;">
+                                <div class="slds-truncate" title="Line Item Barcode">Line Item Barcode</div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={lineItems} for:item="lineItem">
+                            <tr key={lineItem.Id} class="slds-hint-parent">
+                                <td data-label="Product">
+                                    <div class="slds-truncate" title={lineItem.Product2.Name}>
+                                        <lightning-icon icon-name="standard:product_item" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                                        {lineItem.Product2.Name}
+                                    </div>
+                                </td>
+                                <td data-label="Quantity">
+                                    <div class="slds-truncate" title={lineItem.Quantity}>
+                                        {lineItem.Quantity}
+                                    </div>
+                                </td>
+                                <td data-label="Unit Price">
+                                    <div class="slds-truncate" title={lineItem.formattedPrice}>
+                                        {lineItem.formattedPrice}
+                                    </div>
+                                </td>
+                                <td data-label="Line Item Barcode">
+                                    <div class="barcode-cell">
+                                        <svg lwc:dom="manual" class="barcode-svg-lineitem" data-lineitem-id={lineItem.Id}></svg>
+                                        <div class="barcode-id-label">ID: {lineItem.shortId}</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="slds-text-align_center slds-m-top_small">
+                <lightning-badge label="Line Item Barcode(s) Generated" class="slds-badge_success"></lightning-badge>
+            </div>
+        </template>
+        
+        <!-- No Line Items Message -->
+        <template if:false={hasLineItems}>
+            <div class="slds-text-align_center slds-text-color_weak slds-m-vertical_medium">
+                No line items found in this order.
+            </div>
+        </template>
+    </template>
+</div>
+
+<!-- Section 5: Coming Soon (Print) -->
 <div class="slds-box slds-m-bottom_medium" style="background: #f3f3f3;">
     <div class="slds-text-heading_small slds-m-bottom_x-small">
-        Coming in Next Piece
+        Coming in Next Pieces
     </div>
     <ul class="slds-list_dotted">
-        <li>Line Item Barcodes (Piece 5)</li>
+        <li>Invoice Button (Piece 6)</li>
+        <li>Invoice PDF Generation (Piece 7)</li>
         <li>Print Functionality</li>
     </ul>
 </div>

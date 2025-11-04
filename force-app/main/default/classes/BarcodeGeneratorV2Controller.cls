@@ -50,4 +50,38 @@ public with sharing class BarcodeGeneratorV2Controller {
             throw new AuraHandledException('Error retrieving products: ' + e.getMessage());
         }
     }
+ @AuraEnabled(cacheable=true)
+public static List<OrderItem> getOrderLineItems(String orderId) {
+    try {
+        if (String.isBlank(orderId)) {
+            throw new AuraHandledException('Order ID is required');
+        }
+        
+        // Query order items with all details for barcode generation
+        List<OrderItem> lineItems = [
+            SELECT Id, 
+                   OrderId,
+                   Product2Id,
+                   Product2.Name,
+                   Product2.ProductCode,
+                   Quantity,
+                   UnitPrice,
+                   TotalPrice,
+                   LineItem_Barcode__c
+            FROM OrderItem 
+            WHERE OrderId = :orderId 
+            ORDER BY Product2.Name ASC, Id ASC
+        ];
+        
+        System.debug('Found ' + lineItems.size() + ' line items for order: ' + orderId);
+        
+        return lineItems;
+        
+    } catch (Exception e) {
+        System.debug('Error in getOrderLineItems: ' + e.getMessage());
+        throw new AuraHandledException('Error retrieving line items: ' + e.getMessage());
+    }
+}
+
+
 }

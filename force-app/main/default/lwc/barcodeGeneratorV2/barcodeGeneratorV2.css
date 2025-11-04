@@ -140,3 +140,69 @@
         grid-template-columns: 1fr;
     }
 }
+/* Line Items Table */
+.line-items-table {
+    margin-top: 15px;
+    overflow-x: auto;
+}
+
+.slds-table {
+    background: white;
+}
+
+.slds-table thead th {
+    background: #f3f3f3;
+    font-weight: bold;
+    padding: 10px;
+}
+
+.slds-table tbody td {
+    padding: 10px;
+    vertical-align: middle;
+}
+
+/* Barcode in table cell */
+.barcode-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 5px;
+}
+
+.barcode-svg-lineitem {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 5px;
+}
+
+.barcode-id-label {
+    font-size: 10px;
+    color: #666;
+    font-family: monospace;
+}
+
+/* Mobile responsive table */
+@media (max-width: 768px) {
+    .slds-table {
+        font-size: 12px;
+    }
+    
+    .slds-table thead {
+        display: none;
+    }
+    
+    .slds-table tbody td {
+        display: block;
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+    }
+    
+    .slds-table tbody td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 10px;
+        font-weight: bold;
+        text-align: left;
+    }
+}

@@ -63,19 +63,21 @@ private class BarcodeGeneratorV2ControllerTest {
         System.assertEquals(1, products.size());
         System.assertEquals('Test Product', products[0].Product2.Name);
     }
+    @isTest
+static void testGetOrderLineItems() {
+    Order testOrder = [SELECT Id FROM Order LIMIT 1];
+    
+    Test.startTest();
+    List<OrderItem> lineItems = BarcodeGeneratorV2Controller.getOrderLineItems(testOrder.Id);
+    Test.stopTest();
+    
+    // Verify line items returned
+    System.assertNotEquals(null, lineItems);
+    System.assertEquals(1, lineItems.size());
+    System.assertEquals('Test Product', lineItems[0].Product2.Name);
+    System.assertNotEquals(null, lineItems[0].Quantity);
+    System.assertNotEquals(null, lineItems[0].UnitPrice);
 }
-```
 
-**Save the file:** `Ctrl + S`
 
----
-
-## **STEP 4: VERIFY FILES IN VS CODE**
-
-**You should now have 4 files:**
-```
-force-app/main/default/classes/
-├── BarcodeGeneratorV2Controller.cls          ✅
-├── BarcodeGeneratorV2Controller.cls-meta.xml ✅
-├── BarcodeGeneratorV2ControllerTest.cls      ✅
-└── BarcodeGeneratorV2ControllerTest.cls-meta.xml ✅
+}
