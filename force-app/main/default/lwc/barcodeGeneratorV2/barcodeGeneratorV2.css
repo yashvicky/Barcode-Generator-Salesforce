@@ -206,3 +206,14 @@
         text-align: left;
     }
 }
+/* Invoice Section */
+.slds-button-group {
+    display: flex;
+    gap: 10px;
+}
+
+/* Loading spinner container */
+lightning-spinner {
+    display: block;
+    margin: 0 auto;
+}

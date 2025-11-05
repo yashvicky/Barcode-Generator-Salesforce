@@ -1,0 +1,298 @@
+<apex:page standardController="Order" applyBodyTag="false" showHeader="false">
+    <html>
+    <head>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                font-size: 12px;
+                max-width: 800px;
+                margin: 20px auto;
+                padding: 20px;
+            }
+            
+            .print-button {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #0070d2;
+                color: white;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 14px;
+            }
+            
+            .print-button:hover {
+                background: #005fb2;
+            }
+            
+            @media print {
+                .print-button {
+                    display: none;
+                }
+            }
+            
+            .invoice-header {
+                border-bottom: 3px solid #000;
+                padding-bottom: 20px;
+                margin-bottom: 20px;
+            }
+            
+            .invoice-title {
+                font-size: 32px;
+                font-weight: bold;
+                margin-bottom: 5px;
+            }
+            
+            .company-info {
+                text-align: right;
+                font-size: 11px;
+                color: #666;
+            }
+            
+            .info-row {
+                margin-bottom: 8px;
+            }
+            
+            .info-label {
+                font-weight: bold;
+                display: inline-block;
+                width: 140px;
+            }
+            
+            .section-title {
+                font-size: 18px;
+                font-weight: bold;
+                margin-top: 30px;
+                margin-bottom: 15px;
+                padding-bottom: 5px;
+                border-bottom: 2px solid #000;
+            }
+            
+            .barcode-container {
+                border: 2px solid #000;
+                padding: 20px;
+                text-align: center;
+                margin: 20px 0;
+                background: #f9f9f9;
+            }
+            
+            .barcode-title {
+                font-size: 14px;
+                font-weight: bold;
+                margin-bottom: 10px;
+            }
+            
+            .barcode-label {
+                font-size: 12px;
+                font-family: monospace;
+                margin-top: 10px;
+            }
+            
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 15px;
+            }
+            
+            th {
+                background-color: #000;
+                color: #fff;
+                padding: 10px;
+                text-align: left;
+                font-size: 12px;
+            }
+            
+            td {
+                border: 1px solid #ddd;
+                padding: 10px;
+                font-size: 11px;
+            }
+            
+            .barcode-cell {
+                text-align: center;
+                padding: 10px;
+            }
+            
+            .total-row {
+                font-weight: bold;
+                background-color: #f0f0f0;
+            }
+            
+            .footer {
+                margin-top: 40px;
+                padding-top: 20px;
+                border-top: 1px solid #ccc;
+                text-align: center;
+                font-size: 10px;
+                color: #666;
+            }
+        </style>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
+        
+        <script>
+            window.onload = function() {
+                // Generate Order Barcode
+                if (document.getElementById('orderBarcode')) {
+                    JsBarcode("#orderBarcode", "{!Order.OrderNumber}", {
+                        format: "CODE128",
+                        width: 2,
+                        height: 80,
+                        displayValue: false
+                    });
+                }
+                
+                // Generate Product Barcodes
+                var productBarcodes = document.querySelectorAll('.product-barcode');
+                productBarcodes.forEach(function(element) {
+                    var productId = element.getAttribute('data-product-id');
+                    if (productId) {
+                        JsBarcode(element, productId, {
+                            format: "CODE128",
+                            width: 1.5,
+                            height: 50,
+                            displayValue: false
+                        });
+                    }
+                });
+                
+                // Generate Line Item Barcodes
+                var lineItemBarcodes = document.querySelectorAll('.lineitem-barcode');
+                lineItemBarcodes.forEach(function(element) {
+                    var lineItemId = element.getAttribute('data-lineitem-id');
+                    if (lineItemId) {
+                        JsBarcode(element, lineItemId, {
+                            format: "CODE128",
+                            width: 1.5,
+                            height: 40,
+                            displayValue: false
+                        });
+                    }
+                });
+            };
+            
+            function printInvoice() {
+                window.print();
+            }
+        </script>
+    </head>
+    <body>
+        
+        <!-- Print Button -->
+        <button onclick="printInvoice()" class="print-button">🖨️ Print / Save as PDF</button>
+        
+        <!-- Invoice Header -->
+        <div class="invoice-header">
+            <table width="100%">
+                <tr>
+                    <td width="60%">
+                        <div class="invoice-title">INVOICE</div>
+                        <div style="font-size: 11px; color: #666;">Order Invoice with Barcodes</div>
+                    </td>
+                    <td width="40%" class="company-info">
+                        <strong>{!Order.Account.Name}</strong><br/>
+                        <apex:outputText value="{!Order.Account.BillingStreet}" rendered="{!Order.Account.BillingStreet != null}"/><br/>
+                        <apex:outputText value="{!Order.Account.BillingCity}, {!Order.Account.BillingState} {!Order.Account.BillingPostalCode}" 
+                                        rendered="{!Order.Account.BillingCity != null}"/>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        
+        <!-- Order Information -->
+        <div style="margin-bottom: 30px;">
+            <div class="info-row">
+                <span class="info-label">Order Number:</span>
+                <span>{!Order.OrderNumber}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Order Date:</span>
+                <span><apex:outputText value="{0,date,MMMM d, yyyy}"><apex:param value="{!Order.EffectiveDate}"/></apex:outputText></span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Account:</span>
+                <span>{!Order.Account.Name}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Status:</span>
+                <span>{!Order.Status}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Total Amount:</span>
+                <span style="font-size: 16px; font-weight: bold;">
+                    <apex:outputText value="{0, number, currency}">
+                        <apex:param value="{!Order.TotalAmount}"/>
+                    </apex:outputText>
+                </span>
+            </div>
+        </div>
+        
+        <!-- Order Barcode -->
+        <div class="section-title">📦 ORDER BARCODE</div>
+        <div class="barcode-container">
+            <div class="barcode-title">Order Level Tracking</div>
+            <svg id="orderBarcode"></svg>
+            <div class="barcode-label">Order: {!Order.OrderNumber}</div>
+        </div>
+        
+        <!-- Line Items -->
+        <div class="section-title">📋 ORDER ITEMS</div>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 35%;">Product</th>
+                    <th style="width: 10%;">Qty</th>
+                    <th style="width: 15%;">Unit Price</th>
+                    <th style="width: 15%;">Total</th>
+                    <th style="width: 25%;">Barcodes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <apex:repeat value="{!Order.OrderItems}" var="item">
+                    <tr>
+                        <td><strong>{!item.Product2.Name}</strong></td>
+                        <td>{!item.Quantity}</td>
+                        <td>
+                            <apex:outputText value="{0, number, currency}">
+                                <apex:param value="{!item.UnitPrice}"/>
+                            </apex:outputText>
+                        </td>
+                        <td>
+                            <apex:outputText value="{0, number, currency}">
+                                <apex:param value="{!item.TotalPrice}"/>
+                            </apex:outputText>
+                        </td>
+                        <td class="barcode-cell">
+                            <div style="font-size: 9px; font-weight: bold; margin-bottom: 5px;">Product:</div>
+                            <svg class="product-barcode" data-product-id="{!item.Product2Id}"></svg>
+                            <div style="font-size: 9px; font-weight: bold; margin-top: 8px; margin-bottom: 5px;">Line Item:</div>
+                            <svg class="lineitem-barcode" data-lineitem-id="{!item.Id}"></svg>
+                        </td>
+                    </tr>
+                </apex:repeat>
+            </tbody>
+            <tfoot>
+                <tr class="total-row">
+                    <td colspan="3" style="text-align: right; font-size: 14px;">TOTAL:</td>
+                    <td style="font-size: 14px;">
+                        <apex:outputText value="{0, number, currency}">
+                            <apex:param value="{!Order.TotalAmount}"/>
+                        </apex:outputText>
+                    </td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <strong>Invoice generated on <apex:outputText value="{0,date,MMMM d, yyyy 'at' h:mm a}"><apex:param value="{!NOW()}"/></apex:outputText></strong><br/>
+            All barcodes are scannable using standard Code128 barcode scanners.<br/>
+            To save as PDF: Click "Print / Save as PDF" button → Select "Save as PDF" → Save
+        </div>
+        
+    </body>
+    </html>
+</apex:page>

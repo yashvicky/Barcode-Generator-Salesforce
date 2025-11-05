@@ -29,7 +29,10 @@ export default class BarcodeGeneratorV2 extends LightningElement {
 
     @track lineItems = [];
     @track lineItemsLoaded = false;
-    @track lineItemCount = 0;
+    @track lineItemCount = 0; 
+    
+    @track isGeneratingInvoice = false;
+    @track showInvoiceSuccess = false;
 
     jsBarcodeLoaded = false;
 
@@ -348,6 +351,37 @@ formatCurrency(value) {
         currency: 'USD'
     }).format(value);
 }
+ 
+// Generate Invoice
+handleGenerateInvoice() {
+    console.log('Generating invoice for order:', this.recordId);
+    
+    // Validation
+    if (!this.orderBarcodeGenerated) {
+        this.showToast('Warning', 'Please generate Order barcode first', 'warning');
+        return;
+    }
+    
+    // Show loading state
+    this.isGeneratingInvoice = true;
+    this.showInvoiceSuccess = false;
+    
+    // Build Visualforce PDF URL
+    const baseUrl = window.location.origin;
+    const pdfUrl = `${baseUrl}/apex/OrderInvoicePDF?id=${this.recordId}`;
+    
+    // Open PDF in new tab
+    window.open(pdfUrl, '_blank');
+    
+    // Update UI after short delay
+    setTimeout(() => {
+        this.isGeneratingInvoice = false;
+        this.showInvoiceSuccess = true;
+        this.showToast('Success', 'Invoice opened in new tab!', 'success');
+    }, 1000);
+}
+
+
     // Close modal
     handleClose() {
         this.dispatchEvent(new CloseActionScreenEvent());

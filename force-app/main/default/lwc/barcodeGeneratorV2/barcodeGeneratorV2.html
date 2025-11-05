@@ -215,17 +215,41 @@
         <li>Print Functionality</li>
     </ul>
 </div>
-            
-            <!-- Close Button -->
-            <div class="slds-text-align_center">
-                <lightning-button 
-                    label="Close" 
-                    onclick={handleClose}
-                    variant="neutral">
-                </lightning-button>
-            </div>
-            
+
+            <!-- Action Buttons -->
+            <div class="slds-text-align_center slds-m-top_medium">
+    <lightning-button-group>
+        <lightning-button 
+            label="Generate Invoice" 
+            onclick={handleGenerateInvoice}
+            variant="brand"
+            icon-name="utility:file"
+            disabled={isGeneratingInvoice}>
+        </lightning-button>
+        <lightning-button 
+            label="Close" 
+            onclick={handleClose}
+            variant="neutral">
+        </lightning-button>
+    </lightning-button-group>
+</div>
+
+<!-- Invoice Status Messages -->
+<template if:true={showInvoiceSuccess}>
+    <div class="slds-m-top_small">
+        <lightning-badge label="Invoice Generated Successfully!" class="slds-badge_success"></lightning-badge>
+    </div>
+</template>
+
+<template if:true={isGeneratingInvoice}>
+    <div class="slds-m-top_small">
+        <lightning-spinner alternative-text="Generating invoice..." size="small"></lightning-spinner>
+        <div class="slds-text-align_center slds-text-color_weak slds-m-top_x-small">
+            Generating invoice with all barcodes...
         </div>
-        
+    </div>
+</template>
+
+        </div>
     </lightning-card>
 </template>

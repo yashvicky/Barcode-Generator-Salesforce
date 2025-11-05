@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApexPage xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <label>Order Invoice PDF</label>
+    <description>PDF invoice with all barcodes (Order, Product, Line Item)</description>
+</ApexPage>
